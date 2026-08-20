@@ -1,0 +1,46 @@
+server:
+  # Eureka dashboard + registry API listen on this port
+  port: 8761
+
+spring:
+  application:
+    # Logical name shown in Eureka UI and used by other tools
+    name: service-registry
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # This IS the registry — it must not register itself as a client
+    register-with-eureka: false
+    # This IS the registry — it must not fetch a registry from another peer
+    fetch-registry: false
+    service-url:
+      # URL clients use to talk to this Eureka server
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    # Keep self-preservation ON so Eureka does not show
+    # "THE SELF PRESERVATION MODE IS TURNED OFF..."
+    enable-self-preservation: true
+    # Default threshold is 0.85. With only a few local services,
+    # renewals often drop below that and trigger the EMERGENCY banner.
+    # Lower it for laptop/dev so the banner stays quiet while services are healthy.
+    renewal-percent-threshold: 0.49
+    # Evict stale leases a bit faster for local development
+    eviction-interval-timer-in-ms: 10000
+    response-cache-update-interval-ms: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Expose health/info/metrics for Actuator + Spring Boot Admin
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO

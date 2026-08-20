@@ -1,0 +1,73 @@
+# ============================================================
+# product-service.yml  (served by Config Server from Git)
+# ============================================================
+# File naming rule: {spring.application.name}.yml
+# Client asks Config Server for "product-service" + profile "default"
+# and receives this file.
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    # Own database per microservice (database-per-service pattern)
+    url: jdbc:mysql://localhost:3306/product_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: rootpassword
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      # For learning only: auto-create/update tables from entities
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+eureka:
+  client:
+    service-url:
+      # Where this service registers itself
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        # Actuator endpoints + Spring Boot Admin needs these
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+  # Zipkin distributed tracing (start Zipkin on port 9411 first)
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+info:
+  app:
+    name: product-service
+    description: Manages product catalog CRUD
+    version: 1.0.0
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.ecommerce: DEBUG

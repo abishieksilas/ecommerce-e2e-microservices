@@ -1,0 +1,18 @@
+# Activate with: --spring.profiles.active=git
+# Prerequisites:
+#   cd config-repo
+#   git init -b master
+#   git add .
+#   git commit -m "Initial config"
+#
+# Then Config Server clones/reads this local Git repository.
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: ${CONFIG_GIT_URI:file:///${user.dir}/../config-repo}
+          default-label: master
+          clone-on-start: true
+          search-paths: .

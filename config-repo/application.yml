@@ -1,0 +1,17 @@
+# Shared config for all services (Config Server)
+spring:
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+management:
+  observations:
+    key-values:
+      application: ecommerce
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans

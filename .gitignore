@@ -1,0 +1,28 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+.DS_Store
+
+# Logs / runtime
+*.log
+logs/
+
+# Config server local clone caches
+config-server/config-repo/
+
+# Env / secrets (never commit real passwords in real projects)
+.env
+*.env.local

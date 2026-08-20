@@ -1,0 +1,87 @@
+# ============================================================
+# api-gateway.yml
+# ============================================================
+# Spring Cloud Gateway is the single entry point for clients.
+# It looks up target services in Eureka using lb://SERVICE-NAME
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          # Optional auto-routes: /PRODUCT-SERVICE/** -> product-service
+          # We also define explicit routes below for clearer learning paths
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # ---------- PRODUCT SERVICE ----------
+        # Client calls:  http://localhost:8080/api/products/**
+        # Gateway strips nothing; forwards to product-service
+        - id: product-service
+          # lb:// means "load-balanced lookup via Eureka"
+          uri: lb://product-service
+          predicates:
+            # Match any path that starts with /api/products
+            - Path=/api/products/**
+          filters:
+            # Rewrite /api/products -> /products before forwarding
+            - RewritePath=/api/products(?<segment>/?.*), /products${segment}
+
+        # ---------- INVENTORY SERVICE ----------
+        - id: inventory-service
+          uri: lb://inventory-service
+          predicates:
+            - Path=/api/inventory/**
+          filters:
+            - RewritePath=/api/inventory(?<segment>/?.*), /inventory${segment}
+
+        # ---------- ORDER SERVICE ----------
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - RewritePath=/api/orders(?<segment>/?.*), /orders${segment}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true
+  info:
+    env:
+      enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+info:
+  app:
+    name: api-gateway
+    description: Single entry point for all client traffic
+    version: 1.0.0
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO

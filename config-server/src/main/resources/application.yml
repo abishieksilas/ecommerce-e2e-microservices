@@ -1,0 +1,34 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    # native = read YAML files from local folder (works without Git installed)
+    # To use Git instead: set SPRING_PROFILES_ACTIVE=git and init config-repo as a Git repo
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          # Folder that contains product-service.yml, order-service.yml, etc.
+          search-locations: file:../config-repo
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
